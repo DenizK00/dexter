@@ -12,14 +12,14 @@ import pandas as pd
 
 class Equation:
     def __init__(self, expr: str, name=None):
+        self.name = name
         self.expr = expr
         self.terms = self.parse_terms()
         self.var_to_coef = self.extract_terms()
 
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return self.expr
-    
 
     def parse_terms(self) -> list[tuple]:
 
@@ -39,9 +39,12 @@ class Equation:
         
         match self.SEP:
             case ">=":
-                var_to_coef["s"] = 1
-            case "=":
-                pass
+                var_to_coef["slack"] = 1
+            case "<=": 
+                var_to_coef["slack"] = -1
+
+        if self.RHS:
+            var_to_coef["="] = self.RHS
 
         self.variables = list(var_to_coef.keys())
         self.coefficients = np.array(list(var_to_coef.values()))
@@ -49,14 +52,14 @@ class Equation:
         return var_to_coef
     
 
-    def to_vec(self, sort=True) -> np.array:    
+    def to_vec(self) -> np.array:    
         return np.array(self.coefficients) 
     
 
-    def to_row(self, sort=True) -> pd.DataFrame:
-        return pd.DataFrame([self.coefficients], columns=self.variables)
+    def to_row(self) -> pd.DataFrame:
+        return pd.DataFrame([self.coefficients], columns=self.variables, index=[self.name + ":"])
 
 # Example usage
 equation = "3x + 5y - 2z >= 10"
-eq = Equation(equation)
+eq = Equation(equation, name="constraint 1")
 print(eq.to_row())
