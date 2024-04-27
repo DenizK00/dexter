@@ -14,7 +14,7 @@ import copy
 class InvalidForm(Exception): pass
 
 class Equation:
-    def __init__(self, expr: str, name=None):
+    def __init__(self, expr: str, name=""):
         self.name = name
         self.expr = expr
         self.validate_expression()
@@ -33,22 +33,31 @@ class Equation:
         exprs = re.split(seperator_pattern, self.expr)
 
         if len(exprs) != 3:
-            raise ValueError("Invalid expression format. Ensure the expression includes an operator and both sides.")
-
-        self.LHS, self.SEP, self.RHS = exprs
-
-        if self.SEP not in ["<=", ">=", "="]:
-            raise ValueError("Unsupported operator. Only <=, >=, and = are supported.")
+            self.LHS = exprs[0] ### check
+        else: 
+            self.LHS, self.SEP, self.RHS = exprs
+            
+            if self.SEP not in ["<=", ">=", "="]:
+                raise ValueError("Unsupported operator. Only <=, >=, and = are supported.")
 
 
     def parse_terms(self) -> list[tuple]:
         # Regex to capture terms with optional leading signs, coefficients, and variable names
-        pattern = r"([+-]?)\s*(\d+)?([a-zA-Z]+)\^?(\d+)?"
+        # Pattern without exponent: r"([+-]?)\s*(\d+)?([a-zA-Z]+)"
+        # Pattern with exponents: r"([+-]?)\s*(\d+)?([a-zA-Z]+)(\^(\d+))?""
+
+        pattern = r"([+-]?)\s*(\d+)?([a-zA-Z]+)"
         return re.findall(pattern, self.LHS)
 
 
     def extract_terms(self) -> dict[str: float]:
-        var_to_coef = {t[2]:float(t[1])*(-1 if t[0] == "-" else 1) for t in self.terms}
+        var_to_coef = {}
+        for t in self.terms:
+            try:
+                var_to_coef[t[2]] = float(t[1])*(-1 if t[0] == "-" else 1)
+            except ValueError:
+                var_to_coef[t[2]] = -1 if t[0] == "-" else 1
+
         
         self.variables = list(var_to_coef.keys())
         self.coefficients = np.array(list(var_to_coef.values()))
@@ -61,10 +70,8 @@ class Equation:
         # Maybe create a new instance of Equation with the changed expression
         match self.SEP:
             case ">=":
-                slack_coef = 1
                 new_expr = f"{self.LHS}- s ={self.RHS}"
             case "<=": 
-                slack_coef = -1
                 new_expr = f"{self.LHS}+ s ={self.RHS}"
             case _:
                 raise InvalidForm
@@ -75,7 +82,9 @@ class Equation:
         # if self.RHS:
         #     copy_eq.var_to_coef["="] = self.RHS
 
-        return copy_eq
+        return new_eq
+
+    ## Maybe add triv for trivial form where RHS = 0
 
 
     def to_numpy_array(self) -> np.array:
@@ -84,5 +93,3 @@ class Equation:
 
     def to_pandas_dataframe(self) -> pd.DataFrame:
         return pd.DataFrame([self.coefficients], columns=self.variables, index=[self.name + ":"])
-    
-    
