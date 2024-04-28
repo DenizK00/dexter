@@ -26,7 +26,11 @@ class Equation:
         return self.expr
 
     def __repr__(self) -> str:
-        return f"Equation({self.expr!r})"
+        if self.name:
+            repr = f"Equation({self.expr!r}, name={self.name})"
+        else:
+            repr = f"Equation({self.expr!r})"
+        return repr
 
     def validate_expression(self):
         seperator_pattern = r"(>=|<=|=)"
