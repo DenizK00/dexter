@@ -14,16 +14,18 @@ import copy
 class InvalidForm(Exception): pass
 
 class Equation:
+
     def __init__(self, expr: str, name=""):
         self.name = name
         self.expr = expr
         self.validate_expression()
         self.terms = self.parse_terms()
-        self.var_to_coef = self.extract_terms()
+        self.var_to_coef = self.extract_terms() #ADD COMMENT
 
 
     def __str__(self) -> str:
         return self.expr
+
 
     def __repr__(self) -> str:
         if self.name:
@@ -31,6 +33,7 @@ class Equation:
         else:
             repr = f"Equation({self.expr!r})"
         return repr
+
 
     def validate_expression(self):
         seperator_pattern = r"(>=|<=|=)"
@@ -54,7 +57,7 @@ class Equation:
         return re.findall(pattern, self.LHS)
 
 
-    def extract_terms(self) -> dict[str: float]:
+    def extract_terms(self) -> dict[str : float]:
         var_to_coef = {}
         for t in self.terms:
             try:
@@ -74,22 +77,23 @@ class Equation:
         # Maybe create a new instance of Equation with the changed expression
         match self.SEP:
             case ">=":
-                new_expr = f"{self.LHS}- s ={self.RHS}"
+                slack_expr = f"{self.LHS}- s ={self.RHS}"
             case "<=": 
-                new_expr = f"{self.LHS}+ s ={self.RHS}"
+                slack_expr = f"{self.LHS}+ s ={self.RHS}"
             case _:
                 raise InvalidForm
         
-        new_eq = Equation(new_expr)
+        slack_eq = Equation(slack_expr)
 
-        # Might be necessary
+        # Might be necessary afterwards
         # if self.RHS:
         #     copy_eq.var_to_coef["="] = self.RHS
 
-        return new_eq
+        return slack_eq
+
 
     ## Maybe add triv for trivial form where RHS = 0
-
+    # def triv_form(self):
 
     def to_numpy_array(self) -> np.array:
         return np.array(self.coefficients)
