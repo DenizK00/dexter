@@ -67,12 +67,23 @@ class Problem:
             
     def solve(self) -> "Solution":
         self.solver.solve(self.model)
+
+        optimal_solution = {}
         print("--------- OPTIMAL VALUES ---------")
 
         for variable in self.variables:
-            print(f"{variable}:",   getattr(getattr(self.model, variable), "value"))
+            optimal_val = getattr(getattr(self.model, variable), "value")
+            print(f"{variable}:", optimal_val)
+            optimal_solution[variable] = optimal_val
+
         [print("--------------------------------")]
 
-    def __call__(self, solution:"Solution"):
+        self.solution = Solution(optimal_solution)
+
+    def __call__(self, solution:"Solution"|dict):
+        if isinstance(solution, dict):
+            solution = Solution(solution)
+            # Add try except for other types of variables        
+
         value = self.objective.to_numpy_array() * solution.to_numpy_array()
-        
+        return value

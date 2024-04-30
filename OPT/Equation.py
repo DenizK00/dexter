@@ -25,6 +25,13 @@ class Equation:
 
     def __str__(self) -> str:
         return self.expr
+    
+    def __getitem__(self, index:int|str) -> float:
+        match index:
+            case isinstance(index, str):
+                return self.var_to_coef[index]
+            case isinstance(index, int):
+                return self.var_to_coef[self.variables[index]]
 
 
     def __repr__(self) -> str:
