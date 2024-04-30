@@ -79,7 +79,7 @@ class Problem:
         [print("--------------------------------")]
 
         self.solution = Solution.from_dict(optimal_solution)
-        
+
         return self.solution
 
     def __call__(self, solution:"Solution or dict"):
@@ -87,5 +87,5 @@ class Problem:
             solution = Solution(solution)
             # Add try except for other types of variables        
 
-        value = self.objective.to_numpy_array() * solution.to_numpy_array()
+        value = np.sum(self.objective.to_numpy_array() * solution.to_numpy_array())
         return value

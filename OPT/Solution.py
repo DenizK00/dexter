@@ -13,7 +13,7 @@ class Solution:
     def __init__(self, variables:list[str], values:list[float|int]):
         self.variables = variables
         self.values = values
-        self.basis = [i for i in range(self.variables) if self.variables[i] > 0]
+        self.basis = [i for i in range(len(self.values)) if self.values[i] > 0]
 
     @classmethod
     def from_dict(cls, map_dict):
@@ -21,7 +21,7 @@ class Solution:
     
     def __str__(self):
         vars_str = ",".join(var for var in self.variables)
-        values_str = ",".join(val for val in self.values)
+        values_str = ",".join(str(val) for val in self.values)
         return f"({vars_str}) = ({values_str})"
 
     def __getitem__(self, ind:int|str) -> float:
