@@ -78,9 +78,11 @@ class Problem:
 
         [print("--------------------------------")]
 
-        self.solution = Solution(optimal_solution)
+        self.solution = Solution.from_dict(optimal_solution)
+        
+        return self.solution
 
-    def __call__(self, solution:"Solution"|dict):
+    def __call__(self, solution:"Solution or dict"):
         if isinstance(solution, dict):
             solution = Solution(solution)
             # Add try except for other types of variables        
