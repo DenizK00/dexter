@@ -65,11 +65,14 @@ class Problem:
         return model
     
             
-    def solve(self) -> None:
+    def solve(self) -> "Solution":
         self.solver.solve(self.model)
         print("--------- OPTIMAL VALUES ---------")
 
         for variable in self.variables:
             print(f"{variable}:",   getattr(getattr(self.model, variable), "value"))
         [print("--------------------------------")]
+
+    def __call__(self, solution:"Solution"):
+        value = self.objective.to_numpy_array() * solution.to_numpy_array()
         
