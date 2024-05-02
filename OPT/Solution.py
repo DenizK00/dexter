@@ -13,7 +13,7 @@ class Solution:
     def __init__(self, variables:list[str], values:list[float|int]):
         self.variables = variables
         self.values = values
-        self.basis = [i for i in range(len(self.values)) if self.values[i] > 0]
+        self.basis = [i+1 for i in range(len(self.values)) if self.values[i] > 0]
 
     @classmethod
     def from_dict(cls, map_dict):
@@ -33,7 +33,12 @@ class Solution:
 
     def feasibility(self):
         # Check the feasibility of solution
-        pass
+        feasible = True
+        for value in value:
+            if value < 0:
+                feasible = False
+
+        return feasible
 
     def optimality(self):
         # Check the optimality of the solution

@@ -6,6 +6,7 @@ Created on Sun Apr 14 20:32:12 2024
 @author: deniz
 """
 
+import numpy as np
 import pyomo.environ as pyo
 
 
@@ -40,7 +41,7 @@ class Problem:
         self.objective = Equation(objective_equation, name=f"objective {goal}")
 
         self.constraints = [Equation(c, f"constraint {str(i)}") for i, c in enumerate(constraints)]
-
+        self.constraint_matrix = np.vstack([const.to_numpy_array() for const in self.constraints])
         self.definition = str(self.objective) + "\n" + "\n".join(str(constraint) for constraint in self.constraints)
 
         #Do the following conversion from equation to pyomo constraint
@@ -81,6 +82,7 @@ class Problem:
         self.solution = Solution.from_dict(optimal_solution)
 
         return self.solution
+    
 
     def __call__(self, solution:"Solution or dict"):
         if isinstance(solution, dict):
@@ -89,3 +91,12 @@ class Problem:
 
         value = np.sum(self.objective.to_numpy_array() * solution.to_numpy_array())
         return value
+    
+
+    def sensitivity(self, basis:list[int]):
+        A_basic = self.constraint_matrix[:, basis]
+        A_inv = np.linalg.inv(A_basic)
+        # Continue
+
+
+
