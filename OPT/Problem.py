@@ -11,6 +11,7 @@ import pyomo.environ as pyo
 
 
 class SolverNotInstalled(Exception): pass
+class UnrecognizedTerm(Exception): pass
 
 
 class Problem:
@@ -61,6 +62,7 @@ class Problem:
 
         for eq in self.constraints:
             expr = re.sub(r"([a-zA-Z])", r"*model.\1", eq.expr)
+            expr = re.sub(r"(?<![\><=])=", "==", expr)
             setattr(model, eq.name.replace(" ", "_"), pyo.Constraint(expr=eval(expr)))
 
         return model
@@ -93,9 +95,29 @@ class Problem:
         return value
     
 
-    def sensitivity(self, basis:list[int]):
+    def sensitivity(self, b_i:int, solution:"Solution or dict"=None):
+        match solution:
+            case dict():
+                solution = Solution(solution)
+            case None:
+                solution = getattr(self, "solution", self.solve())
+            case Solution():
+                pass
+            case _:
+                raise UnrecognizedTerm("Unrecognized Solution format")
+        
+        basis = solution.basis
+        print("BASIS:", basis)
         A_basic = self.constraint_matrix[:, basis]
         A_inv = np.linalg.inv(A_basic)
+        beta_i = A_inv[:, b_i]
+        c_basic = self.objective.to_numpy_array()[basis]
+
+        for j in range(len(beta_i)):
+            sep = ">=" if beta_i[j] > 0 else "<="
+            print(sep, -solution[j]/beta_i[j])
+            print("Cost", np.sum(-solution[j]/beta_i[j] * c_basic.T * beta_i))
+
         # Continue
 
 

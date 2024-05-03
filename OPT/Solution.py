@@ -13,7 +13,7 @@ class Solution:
     def __init__(self, variables:list[str], values:list[float|int]):
         self.variables = variables
         self.values = values
-        self.basis = [i+1 for i in range(len(self.values)) if self.values[i] > 0]
+        self.basis = [i for i in range(len(self.values)) if self.values[i] > 0]
 
     @classmethod
     def from_dict(cls, map_dict):
@@ -26,10 +26,10 @@ class Solution:
 
     def __getitem__(self, ind:int|str) -> float:
         match ind:
-            case isinstance(ind, str):
+            case str():
                 return self.variables.index(ind)
-            case isinstance(ind, int):
-                return self.var_to_coef[self.variables[ind]]
+            case int():
+                return self.values[ind]
 
     def feasibility(self):
         # Check the feasibility of solution

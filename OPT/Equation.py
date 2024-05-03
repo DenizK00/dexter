@@ -54,6 +54,11 @@ class Equation:
             if self.SEP not in ["<=", ">=", "="]:
                 raise ValueError("Unsupported operator. Only <=, >=, and = are supported.")
 
+            # THINK ABOUT THIS ONE
+            # self.SEP = "==" if self.SEP == "=" else self.SEP
+        
+        return
+
 
     def parse_terms(self) -> list[tuple]:
         # Regex to capture terms with optional leading signs, coefficients, and variable names
