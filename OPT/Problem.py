@@ -111,12 +111,14 @@ class Problem:
         A_basic = self.constraint_matrix[:, basis]
         A_inv = np.linalg.inv(A_basic)
         beta_i = A_inv[:, b_i]
+        print("Beta vec:", beta_i)
         c_basic = self.objective.to_numpy_array()[basis]
+        basic_value = np.sum(c_basic * solution.to_numpy_array()[basis])
 
         for j in range(len(beta_i)):
             sep = ">=" if beta_i[j] > 0 else "<="
-            print(sep, -solution[j]/beta_i[j])
-            print("Cost", np.sum(-solution[j]/beta_i[j] * c_basic.T * beta_i))
+            print(sep, round(-solution[j]/beta_i[j], 2))
+            print("Cost", basic_value + np.sum(-solution[j]/beta_i[j] * c_basic.T * beta_i))
 
         # Continue
 
