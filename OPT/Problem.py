@@ -107,20 +107,26 @@ class Problem:
                 raise UnrecognizedTerm("Unrecognized Solution format")
         
         basis = solution.basis
-        print("BASIS:", basis)
+
         A_basic = self.constraint_matrix[:, basis]
         A_inv = np.linalg.inv(A_basic)
         beta_i = A_inv[:, b_i]
-        print("Beta vec:", beta_i)
+
         c_basic = self.objective.to_numpy_array()[basis]
         basic_value = np.sum(c_basic * solution.to_numpy_array()[basis])
 
+        low_bounds, up_bounds = [], []
+        decide_append = lambda beta_ij: low_bounds.append(boundary) if beta_ij < 0 else up_bounds.append(boundary)
         for j in range(len(beta_i)):
-            sep = ">=" if beta_i[j] > 0 else "<="
-            print(sep, round(-solution[j]/beta_i[j], 2))
-            print("Cost", basic_value + np.sum(-solution[j]/beta_i[j] * c_basic.T * beta_i))
+            boundary = round(-solution[j]/beta_i[j], 5)
+            print(boundary)
+            decide_append(boundary)
+
+        print("Solution remains in the optimal basis while")
+        print(f"Delta is within the range: [{max(low_bounds)}, {min(up_bounds)}]")
 
         # Continue
+
 
 
 

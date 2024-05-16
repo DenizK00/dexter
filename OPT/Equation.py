@@ -20,7 +20,7 @@ class Equation:
         self.expr = expr
         self.validate_expression()
         self.terms = self.parse_terms()
-        self.var_to_coef = self.extract_terms() #ADD COMMENT
+        self.var_to_coef = self.extract_terms() #ADD  
 
 
     def __str__(self) -> str:
@@ -32,7 +32,6 @@ class Equation:
                 return self.var_to_coef[index]
             case isinstance(index, int):
                 return self.var_to_coef[self.variables[index]]
-
 
     def __repr__(self) -> str:
         if self.name:
@@ -82,6 +81,10 @@ class Equation:
         self.coefficients = np.array(list(var_to_coef.values()))
 
         return var_to_coef
+    
+
+    def __copy__(self):
+        return copy.deepcopy(self)
 
          
     def add_slack(self):
