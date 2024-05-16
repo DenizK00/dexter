@@ -1,18 +1,22 @@
 import numpy as np
 import math
-from RV import *
+from RV import RV
+from Sample import Sample
 import scipy.stats as sci
 
 class Distribution:
-
-    def draw(self):
-        return RV(distr=self)
     
     def plot_pdf(self):
         pass
 
     def plot_cdf(self):
         pass
+
+    def draw(self, n=1):
+        if n==1:
+            return RV(distr=self)
+        else:
+            return Sample([RV(distr=self) for i in range(n)])
 
 
 class Normal(Distribution):
@@ -34,13 +38,6 @@ class Normal(Distribution):
     
     def mgf(self, t):
         return self.dist.mgf(t)
-    
-    def draw(self, n=1):
-        if n == 1:
-            return RV(distr=self)
-        else:
-            ## Implement the Sample Class
-            return
 
 
 class Uniform(Distribution):
@@ -55,6 +52,9 @@ class Uniform(Distribution):
     def cdf(self, x):
         return self.dist.cdf(x)
     
+    def mgf(self, x):
+        return self.dist.mgf(x)
+
 
 class Binomial(Distribution):
     def __init__(self, n:int, p:float):
@@ -67,11 +67,12 @@ class Binomial(Distribution):
     
     def cdf(self, x):
         return self.dist.cdf(x)
-    
+
 
 class Poisson(Distribution):
     def __init__(self, mu):
-        pass
+        self.mu = mu
+        self.dist = sci.poisson()
 
     def pmf(self, x):
         return self.dist.pmf(x)
@@ -85,12 +86,27 @@ class Exponential(Distribution):
         self.intensity = intensity
         self.dist = sci.expon(scale=1/intensity)
 
+    def pdf(self, x):
+        return self.dist.pdf(x)
+    
+    def cdf(self, x):
+        return self.dist.cdf(x)
+
     def mgf(self, t):
         return self.intensity / (self.intensity - t)
 
-class Gamma(Distribution):
-    def __init__(self, theta, r):
-        self.
+
+# class Gamma(Distribution):
+#     def __init__(self, theta, r):
+#         self.theta = theta
+#         self.r = r
+#         self.dist = sci.gamma()
+
+#     def pdf(self, x):
+#         return self.dist.pdf(x)
+    
+#     def cdf(self, x):
+#         return self.dist.cdf(x)
 
 Distr = Distribution
 N = Normal
