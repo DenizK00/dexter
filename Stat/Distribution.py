@@ -1,11 +1,18 @@
 import numpy as np
 import math
 from RV import *
+import scipy.stats as sci
 
 class Distribution:
 
     def draw(self):
         return RV(distr=self)
+    
+    def plot_pdf(self):
+        pass
+
+    def plot_cdf(self):
+        pass
 
 
 class Normal(Distribution):
@@ -13,57 +20,80 @@ class Normal(Distribution):
         self.mean = mean
         self.var = var
         self.std = np.sqrt(self.var) #Add Handling negative variance
-    
+        self.dist = sci.norm(loc=self.mean, scale=self.std)
+        self.support = (-np.inf, np.inf)
+
     def __str__(self):
         return f"N(mean={self.mean}, variance={self.var})"
     
-    def pdf(self):
-        return
+    def pdf(self, x):
+        return self.dist.pdf(x)
     
-    def draw(sefl, n=1):
-        return RV(pdf=self.pdf)
+    def cdf(self, x):
+        return self.dist.cdf(x)
+    
+    def mgf(self, t):
+        return self.dist.mgf(t)
+    
+    def draw(self, n=1):
+        if n == 1:
+            return RV(distr=self)
+        else:
+            ## Implement the Sample Class
+            return
 
 
 class Uniform(Distribution):
     def __init__(self, a, b):
-        self.a, self,b = a, b
+        self.a, self.b = a, b
         self.E = (self.a+self.b)/2
+        self.dist = sci.uniform(loc=a, scale=b-a)
     
     def pdf(self, x):
-        if x < self.a or x > self.b:
-            raise NameError(f"{x} is not in the support of pdf")
-        return 1/(self.b-self.a)
+        return self.dist.pdf(x)
     
-    def CDF(self, x):
-        return x/(self.b-self.a)
-    
+    def cdf(self, x):
+        return self.dist.cdf(x)
     
 
 class Binomial(Distribution):
     def __init__(self, n:int, p:float):
         self.n = n
         self.p = p
+        self.dist = sci.binom(n=self.n, p=self.p)
 
-    def pdf(self, x):
-        return math.comb(self.n, x) * (self.p**x)(1 - self.p)^(self.n - x)
+    def pmf(self, x):
+        return self.dist.pmf(x)
+    
+    def cdf(self, x):
+        return self.dist.cdf(x)
+    
 
 class Poisson(Distribution):
     def __init__(self, mu):
         pass
 
+    def pmf(self, x):
+        return self.dist.pmf(x)
+    
+    def cdf(self, x):
+        return self.dist.cdf(x)
+
+
 class Exponential(Distribution):
-    def __init__(self, intensity):
+    def __init__(self, intensity: float):
         self.intensity = intensity
-        self.Expectation = self.intensity
+        self.dist = sci.expon(scale=1/intensity)
 
     def mgf(self, t):
         return self.intensity / (self.intensity - t)
 
-
+class Gamma(Distribution):
+    def __init__(self, theta, r):
+        self.
 
 Distr = Distribution
 N = Normal
-
 
 if __name__ == "__main__":
     X = RV(distr=Binomial(n=20, p=0.1))

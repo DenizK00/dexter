@@ -116,17 +116,18 @@ class Problem:
         basic_value = np.sum(c_basic * solution.to_numpy_array()[basis])
 
         low_bounds, up_bounds = [], []
-        decide_append = lambda beta_ij: low_bounds.append(boundary) if beta_ij < 0 else up_bounds.append(boundary)
+        decide_append = lambda beta_ij: low_bounds.append(boundary) if beta_ij > 0 else up_bounds.append(boundary)
         for j in range(len(beta_i)):
-            boundary = round(-solution[j]/beta_i[j], 5)
+            print(beta_i[j])
+            boundary = round(-solution[j]/beta_i[j], 2)
             print(boundary)
             decide_append(boundary)
 
         print("Solution remains in the optimal basis while")
         print(f"Delta is within the range: [{max(low_bounds)}, {min(up_bounds)}]")
 
-        # Continue
-
-
+        # fix the inverted places
+        
+        return
 
 
