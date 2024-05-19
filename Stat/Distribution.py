@@ -4,6 +4,7 @@ from RV import RV
 from Sample import Sample
 import scipy.stats as sci
 
+
 class Distribution:
     
     def plot_pdf(self):
@@ -38,6 +39,12 @@ class Normal(Distribution):
     
     def mgf(self, t):
         return self.dist.mgf(t)
+    
+    def __add__(self, other):
+        lhs, rhs = self.distribution, other.distribution
+        match rhs.distribution:
+            case Normal():
+                return Normal(self.mean + other.mean, self.var + other.var)
 
 
 class Uniform(Distribution):
@@ -67,6 +74,13 @@ class Binomial(Distribution):
     
     def cdf(self, x):
         return self.dist.cdf(x)
+    
+    def __add__(self, other):
+        lhs, rhs = self.distribution, other.distribution
+        match rhs:
+            case Binomial() if lhs.p == rhs.p:
+                return Binomial(n=lhs.n+rhs.n, p=lhs.p)
+                # check whether it's true also consider the case of unequal p's
 
 
 class Poisson(Distribution):
@@ -96,17 +110,19 @@ class Exponential(Distribution):
         return self.intensity / (self.intensity - t)
 
 
-# class Gamma(Distribution):
-#     def __init__(self, theta, r):
-#         self.theta = theta
-#         self.r = r
-#         self.dist = sci.gamma()
+class Gamma(Distribution):
+    def __init__(self, theta, r):
+        self.theta = theta
+        self.r = r
+        self.dist = sci.gamma(0, 1) # Change the parameters
 
-#     def pdf(self, x):
-#         return self.dist.pdf(x)
+    def pdf(self, x):
+        return self.dist.pdf(x)
     
-#     def cdf(self, x):
-#         return self.dist.cdf(x)
+    def cdf(self, x):
+        return self.dist.cdf(x)
+    
+
 
 Distr = Distribution
 N = Normal
