@@ -1,27 +1,30 @@
 from Distribution import *
-from itertools import count
-    
+
 class RV:
-    _ids = count(0)
-    def __init__(self, distribution:"Distribution", name=None):
+    _ids = 0
+
+    def __init__(self, distribution:"Distribution"=None, name=None):
+        RV._ids += 1
+
+        self._id = RV._ids
         self.distribution = distribution
-        self.name = name
-        if self.name == None:
-            self._id
-        
+        self.name = name if name else self._id
+
+        # actually either a pdf and support OR distribution is required
 
     def observe(self):
         return self.distribution.dist.rvs()
+
     
     def __add__(self, other):
         lhs, rhs = self.distribution, other.distribution
         match (lhs, rhs):
-            # Binomial
-            case (Binomial(), Binomial()) if lhs.distribution.p == rhs.distribution.p:
-                return RV(Binomial(n=(lhs.distribution.n + rhs.distribution.n), p=lhs.distribution.p))
-                # check whether it's true also consider the case of unequal p's
-
+            case (None, None):
+                pass
+            case _:
+                lhs.__add__(rhs) # can be wrong
             
+
 
     def __str__(self):
         return self.name
