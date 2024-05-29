@@ -102,6 +102,7 @@ class NegativeBinomial(Distribution):
         return self.dist.pmf(x)
     
     def cdf(self, x):
+        return self.dist.cdf(x)
 
 
 class Poisson(Distribution):
@@ -143,15 +144,15 @@ class Exponential(Distribution):
 
 
 class Gamma(Distribution):
-    def __init__(self, theta:, r):
+    def __init__(self, theta, r:int):
         self.theta = theta
         self.r = r
         self.dist = sci.gamma(0, 1) # Change the parameters
 
-    def pdf(self, x):
+    def pdf(self, x) -> float:
         return self.dist.pdf(x)
     
-    def cdf(self, x):
+    def cdf(self, x) -> float:
         return self.dist.cdf(x)
     
     def __add__(self, other):
