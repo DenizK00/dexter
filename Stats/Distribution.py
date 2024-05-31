@@ -11,6 +11,9 @@ class Distribution:
         pass
 
     def draw(self, n=1):
+        from .rv import RV
+        from .sample import Sample
+
         if n==1:
             return RV(distr=self)
         else:
@@ -173,11 +176,6 @@ class Unknown(Distribution):
         self.pdf = pdf
 
 
-
-
 Distr = Distribution
 N = Normal
 
-if __name__ == "__main__":
-    X = RV(Binomial(n=20, p=0.1))
-    print(X.distribution)
