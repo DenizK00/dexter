@@ -1,3 +1,5 @@
+from .utils import *
+
 # Everything assumes independence
 
 class Distribution:
@@ -165,7 +167,7 @@ class ChiSquare(Distribution):
             
 
 class Unknown(Distribution):
-    def __init__(self, mean:float, variance:float, pdf:function):
+    def __init__(self, mean:float, variance:float, pdf:"function"):
         self.mean = mean
         self.variance = variance
         self.pdf = pdf

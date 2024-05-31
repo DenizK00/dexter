@@ -1,4 +1,3 @@
-from Distribution import *
 
 class RV:
     _ids = 0
