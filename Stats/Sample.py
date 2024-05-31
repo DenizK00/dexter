@@ -7,6 +7,6 @@ class Sample:
 
     def observe(self):
         return np.array([rv.realize() for rv in self.rvs])
-    
+
     def __str__(self):
         return []

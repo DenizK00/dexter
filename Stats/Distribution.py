@@ -1,9 +1,3 @@
-import numpy as np
-import math
-from RV import RV
-from Sample import Sample
-import scipy.stats as sci
-
 # Everything assumes independence
 
 class Distribution:
@@ -160,6 +154,14 @@ class Gamma(Distribution):
             case Gamma() if self.theta == other.theta:
                 # Wouldn't it be fancy to check with case Gamma(self.intensity)
                 return Gamma(theta=self.theta, r=self.r + other.r)
+            
+class ChiSquare(Distribution):
+    def __init__(self, df:int):
+        self.df = df
+        self.dist
+
+    def pdf(self, x) -> float:
+        return self.dist
             
 
 class Unknown(Distribution):
