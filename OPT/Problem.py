@@ -9,6 +9,8 @@ Created on Sun Apr 14 20:32:12 2024
 import numpy as np
 import pyomo.environ as pyo
 
+from .equation import Equation  # for some reason from .equation import Equation doesn't work
+from .solution import Solution
 
 class SolverNotInstalled(Exception): pass
 class UnrecognizedTerm(Exception): pass

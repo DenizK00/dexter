@@ -6,113 +6,68 @@ Created on Thu Apr 11 19:46:22 2024
 @author: deniz
 """
 
-import re
-import numpy as np
+import sympy as sp
 import pandas as pd
-import copy
+import numpy as np
 
 class InvalidForm(Exception): pass
 
 class Equation:
-
     def __init__(self, expr: str, name=""):
         self.name = name
-        self.expr = expr
-        self.validate_expression()
-        self.terms = self.parse_terms()
-        self.var_to_coef = self.extract_terms() #ADD  
-
+        self.expr = sp.sympify(expr, evaluate=False)  # Convert the string expression to a SymPy expression
+        self.LHS, self.RHS = self.validate_expression(self.expr)
+        self.var_to_coef = self.extract_terms()
 
     def __str__(self) -> str:
-        return self.expr
+        return str(self.expr)
     
-    def __getitem__(self, index:int|str) -> float:
-        match index:
-            case isinstance(index, str):
-                return self.var_to_coef[index]
-            case isinstance(index, int):
-                return self.var_to_coef[self.variables[index]]
+    def __getitem__(self, index: int | str) -> float:
+        if isinstance(index, str):
+            return self.var_to_coef.get(index, 0)
+        elif isinstance(index, int):
+            return self.var_to_coef.get(self.variables[index], 0)
 
     def __repr__(self) -> str:
-        if self.name:
-            repr = f"Equation({self.expr!r}, name={self.name})"
-        else:
-            repr = f"Equation({self.expr!r})"
-        return repr
+        return f"Equation('{self.expr}', name={self.name})" if self.name else f"Equation('{self.expr}')"
 
-
-    def validate_expression(self):
-        seperator_pattern = r"(>=|<=|=)"
-        exprs = re.split(seperator_pattern, self.expr)
-
-        if len(exprs) != 3:
-            self.LHS = exprs[0] ### check
-        else: 
-            self.LHS, self.SEP, self.RHS = exprs
+    def validate_expression(self, expr):
+        # Decompose the expression into LHS and RHS using equality or inequality
+        relations = [sp.Eq, sp.Le, sp.Ge]
+        for rel in relations:
+            if isinstance(expr, rel):
+                return expr.lhs, expr.rhs
             
-            if self.SEP not in ["<=", ">=", "="]:
-                raise ValueError("Unsupported operator. Only <=, >=, and = are supported.")
+        raise ValueError("Unsupported operator. Only <=, >=, and = are supported.")
 
-            # THINK ABOUT THIS ONE
-            # self.SEP = "==" if self.SEP == "=" else self.SEP
-        
-        return
-
-
-    def parse_terms(self) -> list[tuple]:
-        # Regex to capture terms with optional leading signs, coefficients, and variable names
-        # Pattern without exponent: r"([+-]?)\s*(\d+)?([a-zA-Z]+)"
-        # Pattern with exponents: r"([+-]?)\s*(\d+)?([a-zA-Z]+)(\^(\d+))?""
-
-        pattern = r"([+-]?)\s*(\d+)?([a-zA-Z]+)"
-        return re.findall(pattern, self.LHS)
-
-
-    def extract_terms(self) -> dict[str : float]:
-        var_to_coef = {}
-        for t in self.terms:
-            try:
-                var_to_coef[t[2]] = float(t[1])*(-1 if t[0] == "-" else 1)
-            except ValueError:
-                var_to_coef[t[2]] = -1 if t[0] == "-" else 1
-
-        
+    def extract_terms(self) -> dict[str, float]:
+        # Extract terms and their coefficients from the LHS
+        lhs_poly = sp.Poly(self.LHS)
+        var_to_coef = {str(var): lhs_poly.coeff_monomial(var) for var in lhs_poly.gens}
         self.variables = list(var_to_coef.keys())
         self.coefficients = np.array(list(var_to_coef.values()))
-
         return var_to_coef
-    
 
     def __copy__(self):
-        return copy.deepcopy(self)
+        return type(self)(str(self.expr), self.name)
 
-         
     def add_slack(self):
+        # add a slack variable
+        slack_var = sp.Symbol('slack')
 
-        # Maybe create a new instance of Equation with the changed expression
-        match self.SEP:
-            case ">=":
-                slack_expr = f"{self.LHS}- s ={self.RHS}"
-            case "<=": 
-                slack_expr = f"{self.LHS}+ s ={self.RHS}"
-            case _:
-                raise InvalidForm
+        if isinstance(self.expr, sp.Ge):  # Greater than or equal
+            new_expr = sp.Eq(self.LHS - slack_var, self.RHS)
+
+        elif isinstance(self.expr, sp.Le):  # Less than or equal
+            new_expr = sp.Eq(self.LHS + slack_var, self.RHS)
+
+        else:
+            raise InvalidForm("Invalid equation form for adding slack.")
         
-        slack_eq = Equation(slack_expr)
-
-        # Might be necessary afterwards
-        # if self.RHS:
-        #     copy_eq.var_to_coef["="] = self.RHS
-
-        return slack_eq
-
-
-    ## Maybe add triv for trivial form where RHS = 0
-    # def triv_form(self):
+        return Equation(str(new_expr))
 
     def to_numpy_array(self) -> np.array:
-        return np.array(self.coefficients)
-
+        return self.coefficients
 
     def to_pandas_dataframe(self) -> pd.DataFrame:
-        return pd.DataFrame([self.coefficients], columns=self.variables, index=[self.name + ":"])
+        return pd.DataFrame([self.coefficients], columns=self.variables, index=[self.name + ":"] if self.name else [""])
