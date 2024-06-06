@@ -1,3 +1,3 @@
 import grid
 
-grid.start()
+grid.draw()

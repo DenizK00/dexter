@@ -2,7 +2,7 @@ import tkinter as tk
 from grid.grid_environment import GridEnvironment
 
 class DrawGrid:
-    def __init__(self, root, width=10, height=10, cell_size=20):
+    def __init__(self, root, width, height, cell_size):
         self.env = GridEnvironment(width, height, cell_size)
         self.cell_size = cell_size
 
