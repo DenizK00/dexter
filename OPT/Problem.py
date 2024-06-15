@@ -8,6 +8,7 @@ Created on Sun Apr 14 20:32:12 2024
 
 import numpy as np
 import pyomo.environ as pyo
+import re
 
 from .equation import Equation  # for some reason from .equation import Equation doesn't work
 from .solution import Solution
@@ -131,5 +132,4 @@ class Problem:
         # fix the inverted places
         
         return
-
 
