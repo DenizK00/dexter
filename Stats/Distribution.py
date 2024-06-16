@@ -1,8 +1,8 @@
 """
 Script Name: distribution.py
 Author: Deniz
-Created: 2024-06-16 14:34:05
-Description: Script Description
+Created: 2024-05-10 20:34:05
+Description: Abstract distributions
 """
 
 import os
