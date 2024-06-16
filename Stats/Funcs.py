@@ -1,10 +1,20 @@
+"""
+Script Name: funcs.py
+Author: Deniz
+Created: 2024-05-20 14:36:44
+Description: Functions that use multiple objects
+"""
 
+from utils import *
+from rv import RV
+from distribution import Distribution
+from sample import Sample
 
 def P(rv:"RV", c):
     return rv.pdf(c)
 
 def E(rv:"RV|Sample"):
-    return rv.expectation
+    return rv.expected_value
 
 def recognize(data):
     distributions = [sci.norm, sci.expon, sci.uniform]

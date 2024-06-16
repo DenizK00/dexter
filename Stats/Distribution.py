@@ -1,4 +1,19 @@
-from .utils import *
+"""
+Script Name: distribution.py
+Author: Deniz
+Created: 2024-06-16 14:34:05
+Description: Script Description
+"""
+
+import os
+import sys
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+
+from utils import *
 
 # Everything assumes independence
 
@@ -77,6 +92,7 @@ class Binomial(Distribution):
         self.n = n
         self.p = p
         self.dist = sci.binom(n=self.n, p=self.p)
+        self.expectation = self.n * self.p
 
     def pdf(self, x):
         return self.dist.pmf(x)

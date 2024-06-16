@@ -1,4 +1,4 @@
-from .utils import *
+from utils import *
 
 class Sample:
     def __init__(self, rvs:list["RV"]):

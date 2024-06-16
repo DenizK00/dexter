@@ -1,3 +1,9 @@
+"""
+Script Name: rv.py
+Author: Deniz
+Created: 2024-05-15 14:33:20
+Description: Script Description
+"""
 
 class RV:
     _ids = 0
@@ -11,9 +17,12 @@ class RV:
 
         # actually either a pdf and support OR distribution is required
 
+    @property
+    def expected_value(self):
+        return self.distribution.expectation
+
     def observe(self):
         return self.distribution.dist.rvs()
-
     
     def __add__(self, other):
         lhs, rhs = self.distribution, other.distribution
@@ -27,3 +36,10 @@ class RV:
 
     def __str__(self):
         return self.name
+    
+
+if __name__ == "__main__":
+    from distribution import Binomial
+    
+    X = RV(Binomial(10, 0.4))
+    print(X.expected_value)
