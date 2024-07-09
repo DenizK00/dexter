@@ -2,7 +2,8 @@
 Script Name: rv.py
 Author: Deniz
 Created: 2024-05-15 14:33:20
-Description: Script Description
+Description: Random variable class that supports abstract r.v.s,
+Variables a
 """
 
 class RV:
