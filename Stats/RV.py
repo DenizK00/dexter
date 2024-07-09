@@ -15,7 +15,7 @@ class RV:
         self.distribution = distribution
         self.name = name if name else self._id
 
-        # actually either a pdf and support OR distribution is required
+        # actually either a pdf and support, OR the distribution is required
 
     @property
     def expected_value(self):
@@ -30,9 +30,8 @@ class RV:
             case (None, None):
                 pass
             case _:
-                lhs.__add__(rhs) # can be wrong
+                return RV(lhs.__add__(rhs)) # can be wrong
             
-
 
     def __str__(self):
         return self.name

@@ -101,7 +101,7 @@ class Binomial(Distribution):
         return self.dist.cdf(x)
     
     def __add__(self, other):
-        lhs, rhs = self.distribution, other.distribution
+        lhs, rhs = self.dist, other.dist
         match rhs:
             case Binomial() if lhs.p == rhs.p:
                 return Binomial(n=lhs.n+rhs.n, p=lhs.p)
