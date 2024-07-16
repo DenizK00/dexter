@@ -101,9 +101,11 @@ class Binomial(Distribution):
         return self.dist.cdf(x)
     
     def __add__(self, other):
-        lhs, rhs = self.dist, other.dist
+        lhs, rhs = self, other
+        print("Addition")
         match rhs:
-            case Binomial() if lhs.p == rhs.p:
+            case Binomial() if lhs.p == rhs.p: # Case Binomial doesn't
+                print("Case runs")
                 return Binomial(n=lhs.n+rhs.n, p=lhs.p)
                 # check whether it's true also consider the case of unequal p's
 
