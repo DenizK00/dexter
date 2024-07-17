@@ -102,10 +102,9 @@ class Binomial(Distribution):
     
     def __add__(self, other):
         lhs, rhs = self, other
-        print("Addition")
+        print("Binomial Addition")
         match rhs:
             case Binomial() if lhs.p == rhs.p: # Case Binomial doesn't
-                print("Case runs")
                 return Binomial(n=lhs.n+rhs.n, p=lhs.p)
                 # check whether it's true also consider the case of unequal p's
 
@@ -125,7 +124,8 @@ class NegativeBinomial(Distribution):
 class Poisson(Distribution):
     def __init__(self, mu):
         self.mu = mu
-        self.dist = sci.poisson()
+        self.dist = sci.poisson(mu)
+        self.expectation = self.mu
 
     def pdf(self, x):
         return self.dist.pmf(x)
@@ -134,10 +134,11 @@ class Poisson(Distribution):
         return self.dist.cdf(x)
     
     def __add__(self, other):
-        match other.distribution:
+        lhs, rhs = self, other
+        print("Poisson Addition")
+        match rhs:
             case Poisson():
-                return Poisson(mu=self.mu + other.mu)
-
+                return Poisson(mu=lhs.mu + rhs.mu)
 
 
 class Exponential(Distribution):
@@ -152,9 +153,15 @@ class Exponential(Distribution):
         return self.dist.cdf(x)
     
     def __add__(self, other):
-        match other.distribution:
-            case Exponential() if self.intensity == other.intensity:
-                return Gamma(theta=1/self.intensity, r=2)
+        lhs, rhs = self, other
+        print("Exponential Addition")
+
+        match rhs:
+            case Exponential() if lhs:
+                return Gamma
+            
+            case Exponential() if rhs:
+                return 
 
     def mgf(self, t):
         return self.intensity / (self.intensity - t)

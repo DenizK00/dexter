@@ -8,7 +8,7 @@ Description: Testing script for RV
 
 import unittest
 from rv import RV
-from distribution import Binomial, Poisson
+from distribution import Binomial, Poisson, Exponential
 
 class TestRV(unittest.TestCase):
     def test_expected_value_1(self):
@@ -37,13 +37,31 @@ class TestRV(unittest.TestCase):
         self.assertIsInstance(rv_sum.distribution, Binomial) # Testing distribution
         self.assertEqual(rv_sum.expected_value, 35*0.6) # Testing Binomial sum property
 
-    # def test_add_poisson(self):
-    #     poi1 = Poisson(5)
-    #     rv1 = RV(poi1)
+    def test_add_poisson(self):
+        poi1 = Poisson(5)
+        rv1 = RV(poi1)
 
-    #     poi2 = Poisson(8)
-    #     rv2 = RV(poi2)
-    
+        poi2 = Poisson(8)
+        rv2 = RV(poi2)
+
+        rv_sum = rv1 + rv2
+
+        self.assertIsInstance(rv_sum, RV) # Testing RV Addition
+
+        self.assertIsInstance(rv_sum.distribution, Poisson)
+        self.assertEqual(rv_sum.expected_value, 13) # Testing Poisson expected value
+
+    def test_add_exponential(self):
+        exp1 = Exponential(3)
+        rv1 = RV(exp1)
+
+        exp2 = Exponential(4)
+        rv2 = RV(exp2)
+
+        rv_sum = rv1 + rv2
+
+        self.assertIsInstance(rv_sum, Exponential)
+
 
 if __name__ == '__main__':
     unittest.main()
