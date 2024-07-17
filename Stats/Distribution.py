@@ -108,6 +108,30 @@ class Binomial(Distribution):
                 return Binomial(n=lhs.n+rhs.n, p=lhs.p)
                 # check whether it's true also consider the case of unequal p's
 
+
+class Geometric(Distribution):
+    def __init__(self, p):
+        self.p = p
+        self.dist = sci.geom(p)
+        self.expectation = 1/self.p
+
+    def pdf(self, x):
+        return self.dist.pmf(x)
+    
+    def cdf(self, x):
+        return self.dist.cdf(x)
+    
+    def __add__(self, other):
+        lhs, rhs = self, other
+        print("Geometric Addition")
+
+        match rhs:
+            case Poisson() if lhs.p == rhs.p:
+                return NegativeBinomial(r=2, p=lhs.p)
+            
+            ##
+
+
 class NegativeBinomial(Distribution):
     def __init__(self, r, p):
         self.r = r
@@ -145,6 +169,7 @@ class Exponential(Distribution):
     def __init__(self, intensity: float):
         self.intensity = intensity
         self.dist = sci.expon(scale=1/intensity)
+        self.expectation = 1/self.intensity
 
     def pdf(self, x):
         return self.dist.pdf(x)
@@ -157,11 +182,12 @@ class Exponential(Distribution):
         print("Exponential Addition")
 
         match rhs:
-            case Exponential() if lhs:
-                return Gamma
+            case Exponential() if lhs.intensity == rhs.intensity:
+                return Gamma(1/lhs.intensity, 2)
             
-            case Exponential() if rhs:
-                return 
+            # Check the one below
+            case Gamma() if lhs.intensity == 1/rhs.theta:
+                return Gamma(rhs.theta, rhs.r + 1)
 
     def mgf(self, t):
         return self.intensity / (self.intensity - t)

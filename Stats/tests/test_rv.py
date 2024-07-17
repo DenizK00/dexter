@@ -61,7 +61,7 @@ class TestRV(unittest.TestCase):
         rv_sum = rv1 + rv2
 
         self.assertIsInstance(rv_sum, Exponential)
-
+        
 
 if __name__ == '__main__':
     unittest.main()
