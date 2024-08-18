@@ -130,7 +130,6 @@ class Problem:
         print(f"Delta is within the range: [{max(low_bounds)}, {min(up_bounds)}]")
 
         # fix the inverted places
-        
 
         
         return
