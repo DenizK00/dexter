@@ -20,7 +20,7 @@ class Equation:
         self.var_to_coef = self.extract_terms()
 
     def __str__(self) -> str:
-        return str(self.expr)
+        return self.expr
     
     def __getitem__(self, index: int | str) -> float:
         if isinstance(index, str):

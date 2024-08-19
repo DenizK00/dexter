@@ -14,14 +14,28 @@ class TestRV(unittest.TestCase):
         eq = Equation("2*x + 5*y >= 5", name="example")
 
         """Check initialization"""
-        assert(isinstance(eq, Equation))
-        assert(eq.name == "example")
+        self.assertIsInstance(eq, Equation)
+        self.assertEqual(eq.name, "example")
 
         """Check variable and coefficient read"""
-        assert(eq.var_to_coef == {"x":2, "y":5})
 
-    
+        self.assertDictEqual(eq.var_to_coef, {"x": 2, "y": 5})
 
+    def test_parsing_2(self):
+        import numpy as np
+
+        eq_str = ""
+        rand_coefs = np.linspace(1, 20, 10)
+        i = 1
+        for coef in rand_coefs:
+            eq_str += f"{round(coef)}*x_{i} + "
+            i+=1
+        
+        self.assertDictEqual(eq.var_to_coef, {"x":3, "y":7, "z":9})
+
+    def test_invalid_operator(self):
+        with self.assertRaises(ValueError):
+            Equation("x === 5")
 
 
 if __name__ == '__main__':
