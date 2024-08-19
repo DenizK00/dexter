@@ -9,9 +9,10 @@ Description: Script Description
 import unittest
 from equation import Equation
 
+
 class TestRV(unittest.TestCase):
     def test_parsing_1(self):
-        eq = Equation("2*x + 5*y >= 5", name="example")
+        eq = Equation("2*x + 5*y + 3z_1 >= 5", name="example")
 
         """Check initialization"""
         self.assertIsInstance(eq, Equation)
@@ -21,9 +22,11 @@ class TestRV(unittest.TestCase):
 
         self.assertDictEqual(eq.var_to_coef, {"x": 2, "y": 5})
 
+
     def test_parsing_2(self):
         import numpy as np
 
+        """choosing 10 random coefficients, and creting the equation string"""
         eq_str = ""
         rand_coefs = np.linspace(1, 20, 10)
         i = 1
@@ -31,7 +34,11 @@ class TestRV(unittest.TestCase):
             eq_str += f"{round(coef)}*x_{i} + "
             i+=1
         
+        """Testing equation"""
+        eq = Equation(eq_str)
+
         self.assertDictEqual(eq.var_to_coef, {"x":3, "y":7, "z":9})
+
 
     def test_invalid_operator(self):
         with self.assertRaises(ValueError):

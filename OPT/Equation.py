@@ -71,3 +71,5 @@ class Equation:
 
     def to_pandas_dataframe(self) -> pd.DataFrame:
         return pd.DataFrame([self.coefficients], columns=self.variables, index=[self.name + ":"] if self.name else [""])
+
+    
