@@ -12,7 +12,7 @@ from equation import Equation
 
 class TestRV(unittest.TestCase):
     def test_parsing_1(self):
-        eq = Equation("2*x + 5*y + 3z_1 >= 5", name="example")
+        eq = Equation("2*x + 5*y + 3*z_1 >= 5", name="example")
 
         """Check initialization"""
         self.assertIsInstance(eq, Equation)
@@ -20,7 +20,7 @@ class TestRV(unittest.TestCase):
 
         """Check variable and coefficient read"""
 
-        self.assertDictEqual(eq.var_to_coef, {"x": 2, "y": 5})
+        self.assertDictEqual(eq.var_to_coef, {"x": 2, "y": 5, "z_1": 3})
 
 
     def test_parsing_2(self):
@@ -31,13 +31,16 @@ class TestRV(unittest.TestCase):
         rand_coefs = np.linspace(1, 20, 10)
         i = 1
         for coef in rand_coefs:
-            eq_str += f"{round(coef)}*x_{i} + "
-            i+=1
-        
+            eq_str += f"{round(coef)}*x_{i}"
+            if i < 10:
+                eq_str += " + "
+            else:
+                eq_str += " <= 250"
+            i += 1
         """Testing equation"""
         eq = Equation(eq_str)
 
-        self.assertDictEqual(eq.var_to_coef, {"x":3, "y":7, "z":9})
+        self.assertDictEqual(eq.var_to_coef, {f"x_{i}":round(rand_coefs[i-1]) for i in range(1, 11)})
 
 
     def test_invalid_operator(self):
