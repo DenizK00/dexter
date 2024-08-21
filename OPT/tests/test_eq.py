@@ -48,5 +48,11 @@ class TestRV(unittest.TestCase):
             Equation("x === 5")
 
 
+    def test_incomplete_equation(self):
+        import sympy
+        with self.assertRaises(sympy.SympifyError):
+            Equation("3*x_1 + 5*x_2 + ")
+
+
 if __name__ == '__main__':
     unittest.main()
