@@ -45,7 +45,9 @@ class Solution:
         pass
 
     def validate(self):
-        # Use feasible
+        # Ensure solution is feasible
+        # Compute value for the solution parameters
+        
         pass
 
     def to_numpy_array(self) -> np.array:
