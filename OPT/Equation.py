@@ -65,6 +65,43 @@ class Equation:
             raise InvalidForm("Invalid equation form for adding slack.")
         
         return Equation(str(new_expr))
+    
+
+    def visualize(self, x_range=(-10, 10), y_range=(-10, 10)):
+
+        """
+        Visualize the equation in 3D space using Plotly.
+        """
+        # Assuming equation is of the form f(x, y) = z, solve for z.
+        z_expr = sp.solve(self.expr, sp.Symbol('z'))
+        
+        if not z_expr:
+            raise ValueError("Unable to solve equation for z.")
+        
+        z_expr = z_expr[0]  # Take the first solution
+
+        # Create the lambda function for z = f(x, y)
+        z_func = sp.lambdify((sp.Symbol('x'), sp.Symbol('y')), z_expr, "numpy")
+
+        # Generate the meshgrid for x and y
+        x = np.linspace(*x_range, 100)
+        y = np.linspace(*y_range, 100)
+        X, Y = np.meshgrid(x, y)
+
+        # Calculate Z using the lambda function
+        Z = z_func(X, Y)
+
+        # Plot the surface using Plotly
+        fig = go.Figure(data=[go.Surface(z=Z, x=X, y=Y)])
+        fig.update_layout(title=self.name if self.name else "3D Surface Plot", scene=dict(
+                        xaxis_title='X',
+                        yaxis_title='Y',
+                        zaxis_title='Z'),
+                        autosize=False,
+                        width=700, height=700,
+                        margin=dict(l=65, r=50, b=65, t=90))
+        fig.show()
+
 
     def to_numpy_array(self) -> np.array:
         return self.coefficients
