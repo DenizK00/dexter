@@ -1,3 +1,10 @@
+"""
+Script Name: space.py
+Author: Deniz
+Created: 2024-08-26 18:17:34
+Description: Space structure for multidimensional-array visualizations
+"""
+
 import plotly.graph_objs as go
 import numpy as np
 
