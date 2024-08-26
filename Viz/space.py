@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 import numpy as np
 
 class Space:
-    def __init__(self, x_size=10, y_size=10, z_size=10):
+    def __init__(self, x_size=10, y_size=10, z_size=10, grid_density=10):
         """
         Initializes and automatically displays an empty 3D space using Plotly.
 
@@ -21,6 +21,7 @@ class Space:
         self.x_size = x_size
         self.y_size = y_size
         self.z_size = z_size
+        self.grid_density = grid_density
         self.fig = go.Figure()
 
         self._create_space()
@@ -31,9 +32,9 @@ class Space:
         """
         self.fig.update_layout(
             scene=dict(
-                xaxis=dict(nticks=10, range=[-self.x_size, self.x_size], showgrid=False),
-                yaxis=dict(nticks=10, range=[-self.y_size, self.y_size], showgrid=False),
-                zaxis=dict(nticks=10, range=[-self.z_size, self.z_size], showgrid=False),
+                xaxis=dict(nticks=10, range=[-self.x_size, self.x_size]),
+                yaxis=dict(nticks=10, range=[-self.y_size, self.y_size]),
+                zaxis=dict(nticks=10, range=[-self.z_size, self.z_size]),
             ),
             width=700,
             margin=dict(r=20, l=10, b=10, t=10)
@@ -58,7 +59,7 @@ class Space:
             line=dict(color=color, width=5)
         ))
 
-    def add_surface(self, z_data, x_data=None, y_data=None, color='blue'):
+    def add_surface(self, z_data, x_data=None, y_data=None):
         """
         Adds a surface plot to the 3D space.
 
@@ -71,7 +72,24 @@ class Space:
         if x_data is None or y_data is None:
             x_data, y_data = np.meshgrid(range(z_data.shape[0]), range(z_data.shape[1]))
 
-        self.fig.add_trace(go.Surface(z=z_data, x=x_data, y=y_data, colorscale=color))
+        self.fig.add_trace(go.Surface(z=z_data, x=x_data, y=y_data))
+
+    def add_mesh_grid(self):
+        """
+        Adds a mesh grid to the 3D space, automatically adjusted to the size of the space.
+        """
+        x_points = np.linspace(-self.x_size, self.x_size, self.grid_density)
+        y_points = np.linspace(-self.y_size, self.y_size, self.grid_density)
+        z_points = np.linspace(-self.z_size, self.z_size, self.grid_density)
+
+        for x in x_points:
+            for y in y_points:
+                for z in z_points:
+                    self.fig.add_trace(go.Scatter3d(
+                        x=[x], y=[y], z=[z],
+                        mode='markers',
+                        marker=dict(size=3, color='gray')
+                    ))
 
     def show(self):
         """
