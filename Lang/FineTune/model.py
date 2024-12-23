@@ -8,7 +8,7 @@ Description: Script Description
 from langchain import PromptTemplate
 from langchain.llms import HuggingFaceEndpoint
 
-hugging_face_token = "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"
+hugging_face_token = "YOUR HUGGING FACE TOKEN"
 
 # Define the prompt template
 template = "You are an artificial intelligence assistant, answer the question: {question}"
