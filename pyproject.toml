@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Dexter"
+version = "0.1.0"
+description = "Data Exploration and Tinkering package"
+readme = "README.md"
+authors = [{ name = "Deniz", email = "denizkurtaran00@gmail.com" }]
+license = { text = "MIT" }
+dependencies = [
+    "numpy",  # List dependencies here
+    "pandas"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/DenizK00/Dexter"
+"Bug Tracker" = "https://github.com/DenizK00/Dexter/issues"
