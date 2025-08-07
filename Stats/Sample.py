@@ -13,7 +13,7 @@ class Sample:
         self.rvs = rvs
 
     @property
-    def expected_value(self, trials=100):
+    def expected_value(self, trials=120):
         return np.mean([np.mean(self.observe()) for i in range(trials)])
 
     def observe(self):
