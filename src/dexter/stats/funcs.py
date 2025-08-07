@@ -5,10 +5,10 @@ Created: 2024-05-20 14:36:44
 Description: Functions that use multiple objects
 """
 
-from utils import *
-from rv import RV
-from distribution import Distribution
-from sample import Sample
+from .utils import *
+from .rv import RV
+from .distribution import Distribution
+from .sample import Sample
 
 def P(rv:"RV", c):
     return rv.pdf(c)
