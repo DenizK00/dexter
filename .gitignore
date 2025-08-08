@@ -6,3 +6,4 @@ read_count.py
 *.pyc
 .env
 RESTRUCTURE_SUMMARY.md
+/venv
