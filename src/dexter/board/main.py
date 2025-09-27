@@ -18,14 +18,19 @@ class IPKernel:
         self.exposed_instance = None  # To store the instance to be accessed from IPython
 
     def start(self):
-        if self.kernel_thread is None:
+        if self.kernel_thread is None or not self.kernel_thread.is_alive():
             self.kernel_thread = threading.Thread(target=self._start_kernel, daemon=True)
             self.kernel_thread.start()
 
     def _start_kernel(self):
-        self.kernel_app = IPKernelApp.instance()
-        self.kernel_app.initialize(['python'])
-        self.kernel_app.start()
+        try:
+            self.kernel_app = IPKernelApp.instance()
+            if not self.kernel_app.initialized:
+                self.kernel_app.initialize(['python'])
+                self.kernel_app.start()
+        except Exception as e:
+            print(f"Kernel initialization failed: {e}")
+            # Don't re-raise the exception to prevent import failures
 
     def new_qt_console(self):
         connection_file = self.kernel_app.connection_file
@@ -66,10 +71,16 @@ class IPKernel:
 
     def cleanup_consoles(self):
         print("Cleaning up consoles")
+    
+    def is_running(self):
+        """Check if the kernel is running."""
+        return (self.kernel_app is not None and 
+                hasattr(self.kernel_app, 'initialized') and 
+                self.kernel_app.initialized)
 
-# Initialize and start the custom IPython kernel
+# Initialize the custom IPython kernel (but don't start it automatically)
 main_kernel = IPKernel()
-main_kernel.start()
+# Note: Kernel will be started when needed, not on import
 
 # Sample DataFrame
 df = pd.DataFrame({
@@ -87,7 +98,9 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 def get_jupyter_widget_html():
     """Function to integrate Jupyter widget in Dash."""
-    return jupyter_widget.element.html()
+    # Note: jupyter_widget is commented out above, so this function is not currently used
+    # return jupyter_widget.element.html()
+    return "Jupyter widget HTML would go here"
 
 # App layout
 app.layout = dbc.Container([
