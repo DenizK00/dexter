@@ -20,7 +20,7 @@ class Equation:
         self.var_to_coef = self.extract_terms()
 
     def __str__(self) -> str:
-        return self.expr
+        return str(self.expr)
     
     def __getitem__(self, index: int | str) -> float:
         if isinstance(index, str):
@@ -38,7 +38,7 @@ class Equation:
             if isinstance(expr, rel):
                 return expr.lhs, expr.rhs
             
-        raise ValueError("Unsupported operator. Only <=, >=, and = are supported.")
+        raise ValueError("Unsupported operator. Only <=, >=, and == are supported.")
 
     def extract_terms(self) -> dict[str, float]:
         # Extract terms and their coefficients from the LHS
