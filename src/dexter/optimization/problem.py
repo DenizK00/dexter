@@ -59,17 +59,29 @@ class Problem:
         self.goal = goal
 
         self.constraints = [Equation(c, f"constraint {str(i)}") for i, c in enumerate(constraints)]
-        self.constraint_matrix = np.vstack([const.to_numpy_array() for const in self.constraints])
-        self.definition = f"{self.goal} {self.objective_expr}\n" + "\n".join(str(constraint) for constraint in self.constraints)
-
-        #Do the following conversion from equation to pyomo constraint
-        #in the Equation classes method instead of doing here
+        
+        # Collect all variables from constraints first
         set_vars = set()
         for eq in self.constraints:
             for var in eq.variables:
                 set_vars.add(var)
-
+        
         self.variables = sorted(set_vars)
+        
+        # Build constraint matrix with consistent variable ordering
+        constraint_matrix_rows = []
+        for const in self.constraints:
+            # Create a row with coefficients for all variables in the problem
+            row = []
+            for var in self.variables:
+                if var in const.variables:
+                    row.append(const[var])
+                else:
+                    row.append(0.0)
+            constraint_matrix_rows.append(row)
+        
+        self.constraint_matrix = np.array(constraint_matrix_rows)
+        self.definition = f"{self.goal} {self.objective_expr}\n" + "\n".join(str(constraint) for constraint in self.constraints)
 
         for var in self.variables:
             setattr(model, var, pyo.Var(domain=pyo.NonNegativeReals))

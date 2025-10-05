@@ -5,7 +5,7 @@ A comprehensive Python toolkit for data science, machine learning, optimization,
 simulation, and visualization experiments.
 """
 
-__version__ = "0.1.0"
+__version__ = "1.1.0"
 __author__ = "Deniz"
 __email__ = "denizkurtaran00@gmail.com"
 

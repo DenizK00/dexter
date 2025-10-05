@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dexter-toolkit"
-version = "0.1.0"
+version = "1.1.0"
 description = "Data Experimentation and Tinkering Kit - A comprehensive Python toolkit for data science, machine learning, optimization, simulation, and visualization experiments"
 readme = "README.md"
 authors = [{ name = "Deniz", email = "denizkurtaran00@gmail.com" }]
