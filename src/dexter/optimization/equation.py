@@ -7,9 +7,7 @@ Created on Thu Apr 11 19:46:22 2024
 """
 
 import sympy as sp
-import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
 
 class InvalidForm(Exception): pass
 
@@ -92,6 +90,8 @@ class Equation:
         # Calculate Z using the lambda function
         Z = z_func(X, Y)
 
+        import plotly.graph_objects as go  # deferred: only needed for plotting
+
         # Plot the surface using Plotly
         fig = go.Figure(data=[go.Surface(z=Z, x=X, y=Y)])
         fig.update_layout(title=self.name if self.name else "3D Surface Plot", scene=dict(
@@ -107,7 +107,9 @@ class Equation:
     def to_numpy_array(self) -> np.array:
         return self.coefficients
 
-    def to_pandas_dataframe(self) -> pd.DataFrame:
+    def to_pandas_dataframe(self) -> "pd.DataFrame":
+        import pandas as pd  # deferred: only needed here
+
         return pd.DataFrame([self.coefficients], columns=self.variables, index=[self.name + ":"] if self.name else [""])
 
     

@@ -14,8 +14,9 @@ def test_top_level_exports():
         assert getattr(dexter, name) is not None
 
 
-def test_import_does_not_load_ml_or_gui():
-    code = "import sys, dexter; print([m for m in ('sklearn', 'tkinter', 'PyQt5', 'dash') if m in sys.modules])"
+def test_import_is_lazy():
+    heavy = ('sklearn', 'tkinter', 'PyQt5', 'dash', 'pyomo', 'scipy', 'sympy', 'pandas', 'plotly', 'simpy')
+    code = f"import sys, dexter; print([m for m in {heavy!r} if m in sys.modules])"
     out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
     assert out.stdout.strip() == "[]"
 
@@ -46,3 +47,20 @@ def test_pick_classifier_non_interactive():
     model = dexter.pick_classifier(df, "target", choice="k_neighbors", random_state=0, fold_count=3, max_evals=3)
 
     assert hasattr(model, "predict")
+
+
+@pytest.mark.parametrize("package", ["dexter", "dexter.ml", "dexter.optimization", "dexter.simulation",
+                                     "dexter.stats", "dexter.visualization"])
+def test_help_lists_exports_without_heavy_imports(package):
+    heavy = ('sklearn', 'pyomo', 'scipy', 'sympy', 'pandas', 'plotly', 'simpy')
+    code = (f"import sys, importlib; m = importlib.import_module({package!r}); m.help(); "
+            f"print([h for h in {heavy!r} if h in sys.modules]); print(m.__all__)")
+    out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True).stdout
+    *help_text, loaded, names = out.strip().splitlines()
+    assert loaded == "[]"
+    for name in eval(names):
+        assert f"  {name} " in "\n".join(help_text)
+
+
+def test_star_import_does_not_shadow_builtin_help():
+    assert "help" not in dexter.__all__

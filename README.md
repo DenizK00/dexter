@@ -37,6 +37,16 @@ sim = SimManager()
 sim.run(until=100)
 ```
 
+Every package level has a `help()` that lists what it contains, without
+importing the heavy dependencies:
+
+```python
+import dexter
+dexter.help()                # subpackages and common classes
+dexter.stats.help()          # everything in dexter.stats
+dexter.stats.help("Gamma")   # full docs for one name
+```
+
 ## Package structure
 
 ```
