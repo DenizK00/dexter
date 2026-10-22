@@ -8,7 +8,6 @@ Description: Sim Manager for dynamic sim
 
 
 import simpy
-import random
 
 class SimManager:
     def __init__(self, env=None):
@@ -56,18 +55,14 @@ class SimManager:
     def get_resource(self, name):
         return self.resources.get(name, None)
 
-def customer(env, res1):
-    print("Going to line")
-    with res1.request() as req:
-        yield req
-        print("Giving order")
-        yield env.timeout(2)
-        print(f"{env.now}")
-
-
-
 if __name__ == "__main__":
-    import simpy
+    def customer(env, res1):
+        print("Going to line")
+        with res1.request() as req:
+            yield req
+            print("Giving order")
+            yield env.timeout(2)
+            print(f"{env.now}")
 
     env = simpy.Environment()
 

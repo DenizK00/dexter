@@ -1,9 +1,11 @@
 """
 Simulation Module
 
-Provides discrete event simulation framework using SimPy.
+Provides a discrete event simulation framework using SimPy, and a simple
+grid environment for agent experiments.
 """
 
 from .sim_manager import SimManager
+from .grid import Grid, GridApp
 
-__all__ = ['SimManager']
+__all__ = ['SimManager', 'Grid', 'GridApp']

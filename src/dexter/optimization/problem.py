@@ -6,9 +6,11 @@ Created on Sun Apr 14 20:32:12 2024
 @author: deniz
 """
 
+import re
+
 import numpy as np
 import pyomo.environ as pyo
-import re
+import sympy as sp
 
 from .equation import Equation
 from .solution import Solution
@@ -22,10 +24,8 @@ class Problem:
     def __init__(self, objective:str, constraints:list[str], solver="glpk"):
         self.model = self.construct_model(objective, constraints)
 
-        try:
-            self.solver = pyo.SolverFactory(solver)
-        except:
-            raise SolverNotInstalled
+        self.solver_name = solver
+        self.solver = pyo.SolverFactory(solver)
 
 
     def __str__(self):
@@ -80,7 +80,7 @@ class Problem:
                     row.append(0.0)
             constraint_matrix_rows.append(row)
         
-        self.constraint_matrix = np.array(constraint_matrix_rows)
+        self.constraint_matrix = np.array(constraint_matrix_rows, dtype=float)
         self.definition = f"{self.goal} {self.objective_expr}\n" + "\n".join(str(constraint) for constraint in self.constraints)
 
         for var in self.variables:
@@ -98,6 +98,8 @@ class Problem:
     
             
     def solve(self) -> "Solution":
+        if not self.solver.available(exception_flag=False):
+            raise SolverNotInstalled(f"Solver '{self.solver_name}' is not installed.")
         self.solver.solve(self.model)
 
         optimal_solution = {}
@@ -108,7 +110,7 @@ class Problem:
             print(f"{variable}:", optimal_val)
             optimal_solution[variable] = optimal_val
 
-        [print("--------------------------------")]
+        print("--------------------------------")
 
         self.solution = Solution.from_dict(optimal_solution)
 
@@ -117,11 +119,9 @@ class Problem:
 
     def __call__(self, solution:"Solution or dict"):
         if isinstance(solution, dict):
-            solution = Solution(solution)
-            # Add try except for other types of variables        
+            solution = Solution.from_dict(solution)
 
         # Calculate objective value by substituting solution values
-        import sympy as sp
         obj_expr = sp.sympify(self.objective_expr)
         
         # Substitute variable values
@@ -135,9 +135,9 @@ class Problem:
     def sensitivity(self, b_i:int, solution:"Solution or dict"=None):
         match solution:
             case dict():
-                solution = Solution(solution)
+                solution = Solution.from_dict(solution)
             case None:
-                solution = getattr(self, "solution", self.solve())
+                solution = self.solution if hasattr(self, "solution") else self.solve()
             case Solution():
                 pass
             case _:
@@ -149,29 +149,16 @@ class Problem:
         A_inv = np.linalg.inv(A_basic)
         beta_i = A_inv[:, b_i]
 
-        # Extract coefficients from objective expression
-        import sympy as sp
-        obj_expr = sp.sympify(self.objective_expr)
-        obj_coeffs = []
-        for var in self.variables:
-            coeff = obj_expr.coeff(var) if var in obj_expr.free_symbols else 0
-            obj_coeffs.append(float(coeff))
-        
-        c_basic = np.array(obj_coeffs)[basis]
-        basic_value = np.sum(c_basic * solution.to_numpy_array()[basis])
+        x_basic = solution.to_numpy_array()[basis]
 
         low_bounds, up_bounds = [], []
-        decide_append = lambda beta_ij: low_bounds.append(boundary) if beta_ij > 0 else up_bounds.append(boundary)
         for j in range(len(beta_i)):
-            print(beta_i[j])
-            boundary = round(-solution[j]/beta_i[j], 2)
-            print(boundary)
-            decide_append(boundary)
+            boundary = round(-x_basic[j] / beta_i[j], 2)
+            (low_bounds if beta_i[j] > 0 else up_bounds).append(boundary)
 
+        low = max(low_bounds) if low_bounds else -np.inf
+        up = min(up_bounds) if up_bounds else np.inf
         print("Solution remains in the optimal basis while")
-        print(f"Delta is within the range: [{max(low_bounds)}, {min(up_bounds)}]")
+        print(f"Delta is within the range: [{low}, {up}]")
 
-        # fix the inverted places
-        
-        return
-
+        return low, up

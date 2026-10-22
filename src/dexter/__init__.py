@@ -1,61 +1,51 @@
 """
 Dexter Toolkit - Data Experimentation and Tinkering Kit
 
-A comprehensive Python toolkit for data science, machine learning, optimization, 
-simulation, and visualization experiments.
+A small Python toolkit for optimization, simulation, statistics,
+visualization and model selection experiments.
 """
 
-__version__ = "1.1.0"
+__version__ = "2.0.0"
 __author__ = "Deniz"
 __email__ = "denizkurtaran00@gmail.com"
 
-# Import all submodules
-from . import (
-    board,      # Interactive data dashboard
-    core,       # Core pipeline and utilities
-    data_wrangling,  # Data transformation tools
-    environment,     # Environment simulation
-    language,        # Language processing
-    ml,         # Machine learning
-    optimization,    # Mathematical optimization
-    simulation,      # Discrete event simulation
-    stats,      # Statistical analysis
-    visualization    # Visualization tools
-)
+import importlib
+
+from . import optimization, simulation, stats, visualization
 
 # Convenience imports for commonly used classes
-from .ml.pick import pick_classifier
-from .optimization.problem import Problem
-from .simulation.sim_manager import SimManager
-from .stats.distribution import Normal, Uniform, Binomial, Poisson, Exponential
-from .visualization.space import Space
-from .environment.grid import Grid, GridApp
-from .board.main import IPKernel
+from .optimization import Problem, Equation, Solution
+from .simulation import SimManager, Grid
+from .stats import Normal, Uniform, Binomial, Poisson, Exponential
+from .visualization import Space
 
 __all__ = [
     # Submodules
-    'board',
-    'core', 
-    'data_wrangling',
-    'environment',
-    'language',
     'ml',
     'optimization',
     'simulation',
     'stats',
     'visualization',
-    
+
     # Common classes
     'pick_classifier',
     'Problem',
-    'SimManager', 
+    'Equation',
+    'Solution',
+    'SimManager',
+    'Grid',
     'Normal',
     'Uniform',
     'Binomial',
     'Poisson',
     'Exponential',
     'Space',
-    'Grid',
-    'GridApp',
-    'IPKernel'
 ]
+
+
+def __getattr__(name):
+    # dexter.ml needs the optional [ml] extra, so it is only imported on use
+    if name in ("ml", "pick_classifier"):
+        ml = importlib.import_module(".ml", __name__)
+        return ml if name == "ml" else ml.pick_classifier
+    raise AttributeError(f"module 'dexter' has no attribute {name!r}")

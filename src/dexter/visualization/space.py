@@ -67,10 +67,9 @@ class Space:
         z_data (array-like): The z-values of the surface.
         x_data (array-like): Optional. The x-values corresponding to z_data.
         y_data (array-like): Optional. The y-values corresponding to z_data.
-        color (str): The color of the surface (default is 'blue').
         """
         if x_data is None or y_data is None:
-            x_data, y_data = np.meshgrid(range(z_data.shape[0]), range(z_data.shape[1]))
+            x_data, y_data = np.meshgrid(range(z_data.shape[1]), range(z_data.shape[0]))
 
         self.fig.add_trace(go.Surface(z=z_data, x=x_data, y=y_data))
 

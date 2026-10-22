@@ -1,6 +1,3 @@
-import tkinter as tk
-from tkinter import messagebox
-
 class Grid:
     def __init__(self, nrows: int, ncolumns: int):
         self.nrows = nrows
@@ -12,8 +9,8 @@ class Grid:
         self.grid[y][x] = value
 
     def __getitem__(self, pos):
-        i, j = pos
-        return self.grid[i][j]
+        x, y = pos  # same (x, y) order as set_cell
+        return self.grid[y][x]
 
     def set_agent(self, x: int, y: int) -> None:
         if self.agent_pos:
@@ -33,6 +30,9 @@ class Grid:
 
 class GridApp:
     def __init__(self, root, grid):
+        import tkinter as tk  # imported here so Grid works without a Tk install
+
+        self.tk = tk
         self.root = root
         self.grid = grid
         self.root.title("Grid Display")
@@ -52,16 +52,19 @@ class GridApp:
         self.quit_button.pack(side=tk.LEFT)
 
     def update_text(self):
-        self.text.delete(1.0, tk.END)
-        self.text.insert(tk.END, str(self.grid))
+        self.text.delete(1.0, self.tk.END)
+        self.text.insert(self.tk.END, str(self.grid))
 
     def update_grid(self):
         # Example action: move the agent to a new position
         self.grid.set_agent(3, 3)
         self.update_text()
+        from tkinter import messagebox
         messagebox.showinfo("Grid Updated", "The grid has been updated!")
 
 if __name__ == "__main__":
+    import tkinter as tk
+
     grid = Grid(10, 20)
     grid.set_cell(1, 1, '#')
     grid.set_cell(2, 2, '#')

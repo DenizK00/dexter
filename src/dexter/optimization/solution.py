@@ -7,7 +7,6 @@ Created on Tue Apr 30 17:16:19 2024
 """
 
 import numpy as np
-import pyomo.environ as pyo
 
 class Solution:
     def __init__(self, variables:list[str], values:list[float|int]):
@@ -24,31 +23,19 @@ class Solution:
         values_str = ",".join(str(val) for val in self.values)
         return f"({vars_str}) = ({values_str})"
 
-    def __getitem__(self, ind:int|str) -> float:
+    def __getitem__(self, ind: int | str) -> float:
         match ind:
             case str():
-                return self.variables.index(ind)
+                return self.values[self.variables.index(ind)]
             case int():
                 return self.values[ind]
 
-    def feasibility(self):
-        # Check the feasibility of solution
-        feasible = True
-        for value in value:
-            if value < 0:
-                feasible = False
+    def __contains__(self, var: str) -> bool:
+        return var in self.variables
 
-        return feasible
-
-    def optimality(self):
-        # Check the optimality of the solution
-        pass
-
-    def validate(self):
-        # Ensure solution is feasible
-        # Compute value for the solution parameters
-        
-        pass
+    def feasibility(self) -> bool:
+        # Check the non-negativity of the solution
+        return all(value >= 0 for value in self.values)
 
     def to_numpy_array(self) -> np.array:
         return np.array(self.values)

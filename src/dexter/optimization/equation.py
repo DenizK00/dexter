@@ -9,6 +9,7 @@ Created on Thu Apr 11 19:46:22 2024
 import sympy as sp
 import pandas as pd
 import numpy as np
+import plotly.graph_objects as go
 
 class InvalidForm(Exception): pass
 

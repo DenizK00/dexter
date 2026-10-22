@@ -1,3 +1,0 @@
-import grid
-
-grid.draw()

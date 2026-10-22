@@ -32,7 +32,7 @@ def sample_distributions():
 @pytest.fixture
 def sample_grid():
     """Sample grid for testing"""
-    from dexter.environment.grid import Grid
+    from dexter.simulation import Grid
     
     grid = Grid(nrows=5, ncolumns=5)
     grid.set_agent(2, 2)
